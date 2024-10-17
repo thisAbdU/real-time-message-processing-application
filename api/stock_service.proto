@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package stockapi;
+
+option go_package = "./api";
+
+service StockService {
+  rpc GetLatestStockData(GetLatestStockDataRequest) returns (StockData) {}
+  rpc StreamStockData(StreamStockDataRequest) returns (stream StockData) {}
+}
+
+message GetLatestStockDataRequest {
+  string symbol = 1;
+}
+
+message StreamStockDataRequest {
+  string symbol = 1;
+}
+
+message StockData {
+  string symbol = 1;
+  double price = 2;
+  int64 time = 3;
+  double moving_average = 4;
+}

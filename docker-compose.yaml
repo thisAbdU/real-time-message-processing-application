@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: stockdb
+      POSTGRES_USER: stockuser
+      POSTGRES_PASSWORD: stockpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pulsar:
+    image: apachepulsar/pulsar:2.8.0
+    command: bin/pulsar standalone
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "50051:50051"
+    environment:
+      DATABASE_URL: postgres://stockuser:stockpass@postgres:5432/stockdb?sslmode=disable
+    depends_on:
+      - postgres
+
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile.producer
+    environment:
+      PULSAR_URL: pulsar://pulsar:6650
+    depends_on:
+      - pulsar
+
+  processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.processor
+    environment:
+      PULSAR_URL: pulsar://pulsar:6650
+    depends_on:
+      - pulsar
+
+  storage:
+    build:
+      context: .
+      dockerfile: Dockerfile.storage
+    environment:
+      DATABASE_URL: postgres://stockuser:stockpass@postgres:5432/stockdb?sslmode=disable
+      PULSAR_URL: pulsar://pulsar:6650
+    depends_on:
+      - postgres
+      - pulsar
+
+volumes:
+  postgres_data:
+

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/apache/pulsar-client-go/pulsar"
@@ -13,7 +14,7 @@ import (
 
 func main() {
 	client, err := pulsar.NewClient(pulsar.ClientOptions{
-		URL: "pulsar://localhost:6650",
+		URL: os.Getenv("PULSAR_URL"),
 	})
 	if err != nil {
 		log.Fatal(err)
