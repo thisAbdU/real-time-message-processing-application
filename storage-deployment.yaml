@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage
+  template:
+    metadata:
+      labels:
+        app: storage
+    spec:
+      containers:
+      - name: storage
+        image: thisabdu/storage:latest
+        env:
+        - name: PULSAR_URL
+          value: "pulsar://pulsar-service:6650"
+        - name: DATABASE_URL
+          value: "postgres://stockuser:stockpass@postgres-service:5432/stockdb?sslmode=disable"

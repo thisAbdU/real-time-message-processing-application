@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pulsar
+  template:
+    metadata:
+      labels:
+        app: pulsar
+    spec:
+      containers:
+      - name: pulsar
+        image: apachepulsar/pulsar:2.8.0
+        command: ["bin/pulsar", "standalone"]
+        ports:
+        - containerPort: 6650
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsar-service
+spec:
+  selector:
+    app: pulsar
+  ports:
+    - name: pulsar
+      protocol: TCP
+      port: 6650
+      targetPort: 6650
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
